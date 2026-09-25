@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Calreminder",
+  "version": "0.1.0",
+  "description": "LearnUs 일정을 확인하고 완료 표시하세요.",
+  "minimum_chrome_version": "106",
+  "action": {"default_popup": "popup.html", "default_title": "Calreminder"},
+  "permissions": ["identity", "storage"],
+  "optional_host_permissions": ["https://*/*", "http://localhost/*", "http://127.0.0.1/*"]
+}

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8f6">
+  <title>Calreminder</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">✳</span><span>calreminder</span></div>
+      <div class="side-section-label">내 일정</div>
+      <nav class="nav" aria-label="일정 보기">
+        <button class="nav-item active" data-view="upcoming"><span class="nav-icon">▦</span> 예정된 일정 <span id="upcoming-count" class="nav-count"></span></button>
+        <button class="nav-item" data-view="today"><span class="nav-icon">◷</span> 오늘</button>
+        <button class="nav-item" data-view="all"><span class="nav-icon">☷</span> 전체 일정</button>
+        <button class="nav-item" data-view="completed"><span class="nav-icon">✓</span> 완료한 일정 <span id="completed-count" class="nav-count"></span></button>
+      </nav>
+      <div class="side-bottom">
+        <div class="source-card">
+          <span class="source-dot"></span>
+          <div><span class="source-label">연결된 캘린더</span><strong id="source-name">연결 대기 중</strong></div>
+          <button id="settings-button" class="icon-button" type="button" title="캘린더 설정" aria-label="캘린더 설정">⚙</button>
+        </div>
+        <p class="side-note">일정과 체크 기록은 이 컴퓨터에 저장됩니다.</p>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <span class="eyebrow">YOUR DAILY SPACE</span>
+        <div class="top-actions">
+          <span id="sync-label" class="sync-label"></span>
+          <button id="refresh-button" class="button secondary" type="button"><span aria-hidden="true">↻</span> 동기화</button>
+        </div>
+      </header>
+      <section class="content">
+        <div class="hero">
+          <div><p class="date-label" id="today-label"></p><h1 id="page-title">예정된 일정</h1><p class="subtitle" id="page-subtitle">다가오는 일정을 한눈에 확인하세요.</p></div>
+          <div class="hero-mark" aria-hidden="true"><span>✦</span></div>
+        </div>
+        <div class="overview" aria-label="일정 현황">
+          <div class="stat"><span class="stat-label">남은 일정</span><strong id="stat-pending">0</strong><span class="stat-foot">완료를 기다리는 일정</span></div>
+          <div class="stat"><span class="stat-label">오늘 일정</span><strong id="stat-today">0</strong><span class="stat-foot">오늘 확인할 항목</span></div>
+          <div class="stat stat-progress"><span class="stat-label">완료 현황</span><strong id="stat-progress">0%</strong><div class="progress-track"><span id="progress-fill"></span></div></div>
+        </div>
+        <div class="list-heading"><div><h2 id="list-title">다가오는 일정</h2><p id="list-caption">완료한 일정은 완료 탭에서 다시 볼 수 있습니다.</p></div><div class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="일정 검색" aria-label="일정 검색"></div></div>
+        <div id="message" class="message hidden" role="status"></div>
+        <div id="events" class="events" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+  <dialog id="settings-dialog" class="settings-dialog">
+    <form id="settings-form" method="dialog">
+      <div class="dialog-top"><span class="dialog-icon">✳</span><button id="close-settings" class="icon-button" type="button" aria-label="닫기">✕</button></div>
+      <h2>캘린더 연결</h2>
+      <p>LearnUs에서 복사한 iCalendar 내보내기 링크를 입력하세요.</p>
+      <label for="feed-url">캘린더 URL</label>
+      <input id="feed-url" type="url" placeholder="https://.../calendar/export_execute.php?..." autocomplete="off" required>
+      <p class="input-note">링크에는 인증 토큰이 포함될 수 있습니다. 이 컴퓨터에만 저장됩니다.</p>
+      <div class="dialog-actions"><button id="cancel-settings" class="button secondary" type="button">취소</button><button id="save-settings" class="button primary" type="submit">연결하기</button></div>
+    </form>
+  </dialog>
+</body>
+</html>
