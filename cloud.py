@@ -201,6 +201,11 @@ def welcome():
     return send_from_directory(STATIC, "welcome.html")
 
 
+@app.get("/privacy")
+def privacy():
+    return send_from_directory(STATIC, "privacy.html")
+
+
 @app.get("/login")
 def login():
     if session.get("user_id"):

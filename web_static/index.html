@@ -25,7 +25,7 @@
           <div><span class="source-label">연결된 캘린더</span><strong id="source-name">연결 대기 중</strong></div>
           <button id="settings-button" class="icon-button" type="button" title="캘린더 설정" aria-label="캘린더 설정">⚙</button>
         </div>
-        <p class="side-note">일정과 체크 기록은 이 컴퓨터에 저장됩니다.</p>
+        <p class="side-note">일정과 체크 기록은 로그인한 계정에 저장됩니다. <a href="/privacy">개인정보 처리방침</a></p>
       </div>
     </aside>
     <main class="main">
@@ -61,7 +61,7 @@
       <p>LearnUs에서 복사한 iCalendar 내보내기 링크를 입력하세요.</p>
       <label for="feed-url">캘린더 URL</label>
       <input id="feed-url" type="url" placeholder="https://.../calendar/export_execute.php?..." autocomplete="off" required>
-      <p class="input-note">링크에는 인증 토큰이 포함될 수 있습니다. 이 컴퓨터에만 저장됩니다.</p>
+      <p class="input-note">링크에는 인증 토큰이 포함될 수 있습니다. 서버에서 암호화해 저장합니다.</p>
       <div class="dialog-actions"><button id="cancel-settings" class="button secondary" type="button">취소</button><button id="save-settings" class="button primary" type="submit">연결하기</button></div>
     </form>
   </dialog>
