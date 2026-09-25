@@ -1,5 +1,6 @@
 Flask>=3.0,<4
 Authlib>=1.6,<2
+requests>=2.31,<3
 cryptography>=42,<47
 SQLAlchemy>=2.0,<3
 psycopg[binary]>=3.2,<4
