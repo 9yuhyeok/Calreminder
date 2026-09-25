@@ -6,5 +6,5 @@
   "minimum_chrome_version": "106",
   "action": {"default_popup": "popup.html", "default_title": "Calreminder"},
   "permissions": ["identity", "storage"],
-  "optional_host_permissions": ["https://*/*", "http://localhost/*", "http://127.0.0.1/*"]
+  "optional_host_permissions": ["https://calreminder.onrender.com/*", "http://localhost/*", "http://127.0.0.1/*"]
 }

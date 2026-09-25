@@ -1,4 +1,5 @@
-let base = '';
+const DEFAULT_BASE = 'https://calreminder.onrender.com';
+let base = DEFAULT_BASE;
 let token = '';
 let calendar = null;
 const $ = (selector) => document.querySelector(selector);
@@ -75,6 +76,8 @@ $('#server-form').addEventListener('submit',async event=>{
 $('#login').addEventListener('click',async()=>{
   try {
     error('');
+    const granted=await chrome.permissions.request({origins:[originPattern(base)]});
+    if (!granted) throw new Error('서버 접근 권한이 필요합니다.');
     const verifier=randomVerifier();
     const redirect=chrome.identity.getRedirectURL('oauth');
     const url=new URL(`${base}/extension/login`);
@@ -93,4 +96,4 @@ $('#login').addEventListener('click',async()=>{
 $('#refresh').addEventListener('click',async()=>{try{calendar=await api('refresh',{});render();error('');}catch(e){error(e.message);}});
 $('#open-web').addEventListener('click',()=>chrome.tabs.create({url:base}));
 $('#logout').addEventListener('click',async()=>{try{await api('logout',{});}catch(e){}token='';calendar=null;await chrome.storage.local.remove('token');render();});
-(async()=>{const saved=await chrome.storage.local.get(['base','token']);base=saved.base||'';token=saved.token||'';$('#server-url').value=base;render();await loadCalendar();})();
+(async()=>{const saved=await chrome.storage.local.get(['base','token']);base=saved.base||DEFAULT_BASE;token=saved.token||'';$('#server-url').value=base;render();await loadCalendar();})();
