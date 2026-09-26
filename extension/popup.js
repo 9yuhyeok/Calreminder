@@ -13,14 +13,6 @@ function cleanBase(value) {
   return url.origin;
 }
 function originPattern(value) {return `${new URL(value).origin}/*`;}
-function randomVerifier() {
-  const bytes = crypto.getRandomValues(new Uint8Array(32));
-  return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-async function challenge(verifier) {
-  const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)));
-  return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
 async function api(path, body) {
   const response = await fetch(`${base}/api/extension/${path}`, {
     method: body === undefined ? 'GET' : 'POST',
@@ -78,19 +70,7 @@ $('#login').addEventListener('click',async()=>{
     error('');
     const granted=await chrome.permissions.request({origins:[originPattern(base)]});
     if (!granted) throw new Error('서버 접근 권한이 필요합니다.');
-    const verifier=randomVerifier();
-    const redirect=chrome.identity.getRedirectURL('oauth');
-    const url=new URL(`${base}/extension/login`);
-    url.searchParams.set('redirect_uri',redirect);
-    url.searchParams.set('code_challenge',await challenge(verifier));
-    const result=await chrome.identity.launchWebAuthFlow({url:url.href,interactive:true});
-    if (!result) throw new Error('로그인을 완료하지 못했습니다.');
-    const code=new URL(result).searchParams.get('code');
-    if (!code) throw new Error('로그인 응답이 올바르지 않습니다.');
-    const response=await fetch(`${base}/api/extension/token`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,verifier})});
-    const data=await response.json();
-    if (!response.ok) throw new Error(data.error || '로그인에 실패했습니다.');
-    token=data.token;await chrome.storage.local.set({token});await loadCalendar();
+    await chrome.tabs.create({url:chrome.runtime.getURL('login.html')});
   } catch(e) {error(e.message);}
 });
 $('#refresh').addEventListener('click',async()=>{try{calendar=await api('refresh',{});render();error('');}catch(e){error(e.message);}});
