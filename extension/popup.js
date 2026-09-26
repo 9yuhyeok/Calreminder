@@ -2,9 +2,14 @@ const DEFAULT_BASE = 'https://calreminder.onrender.com';
 let base = DEFAULT_BASE;
 let token = '';
 let calendar = null;
+let loading = false;
 const $ = (selector) => document.querySelector(selector);
 const show = (selector, visible) => $(selector).classList.toggle('hidden', !visible);
-function error(message) {$('#error').textContent = message || ''; show('#error', Boolean(message));}
+function error(message) {
+  $('#error-message').textContent = message || '';
+  show('#error', Boolean(message));
+  show('#retry', Boolean(message) && Boolean(token));
+}
 function cleanBase(value) {
   const url = new URL(value);
   if (!['https:', 'http:'].includes(url.protocol) ||
@@ -29,6 +34,9 @@ function render() {
   show('#settings', !base);
   show('#signed-out', Boolean(base) && !token);
   show('#calendar', Boolean(base) && Boolean(token));
+  show('#loading', Boolean(token) && loading);
+  show('#items', Boolean(calendar) && Boolean(token));
+  if (loading) $('#loading-text').textContent = '일정을 불러오는 중입니다.';
   if (!calendar || !token) return;
   $('#source').textContent = calendar.source || '캘린더 연결 전';
   $('#today').textContent = new Intl.DateTimeFormat('ko-KR',{month:'long',day:'numeric',weekday:'long'}).format(new Date());
@@ -49,9 +57,13 @@ function render() {
 }
 async function loadCalendar() {
   if (!token) return;
+  loading=true;error('');render();
+  const slowNotice=setTimeout(()=>{$('#loading-text').textContent='무료 서버를 시작하고 있습니다. 첫 연결은 잠시 걸릴 수 있습니다.';},4000);
   try {calendar=await api('state');error('');}
-  catch(e) {if (e.message==='로그인이 필요합니다.') {token='';await chrome.storage.local.remove('token');} error(e.message);}
-  render();
+  catch(e) {
+    if (e.message==='로그인이 필요합니다.') {token='';await chrome.storage.local.remove('token');}
+    error(e.message==='Failed to fetch'?'서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.':e.message);
+  } finally {clearTimeout(slowNotice);loading=false;render();}
 }
 $('#settings-toggle').addEventListener('click',()=>show('#settings',$('#settings').classList.contains('hidden')));
 $('#server-form').addEventListener('submit',async event=>{
@@ -73,7 +85,8 @@ $('#login').addEventListener('click',async()=>{
     await chrome.tabs.create({url:chrome.runtime.getURL('login.html')});
   } catch(e) {error(e.message);}
 });
-$('#refresh').addEventListener('click',async()=>{try{calendar=await api('refresh',{});render();error('');}catch(e){error(e.message);}});
+$('#retry').addEventListener('click',loadCalendar);
+$('#refresh').addEventListener('click',async()=>{try{calendar=await api('refresh',{});render();error('');}catch(e){error(e.message==='Failed to fetch'?'서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.':e.message);}});
 $('#open-web').addEventListener('click',()=>chrome.tabs.create({url:base}));
 $('#logout').addEventListener('click',async()=>{try{await api('logout',{});}catch(e){}token='';calendar=null;await chrome.storage.local.remove('token');render();});
 (async()=>{const saved=await chrome.storage.local.get(['base','token']);base=saved.base||DEFAULT_BASE;token=saved.token||'';$('#server-url').value=base;render();await loadCalendar();})();
